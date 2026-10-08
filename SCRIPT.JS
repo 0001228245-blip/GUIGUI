@@ -1,4 +1,4 @@
-Não é spam
+
  {
             id: 9,// FUNÇÃO PARA PEGAR ELEMENTOS PELO ID
 function $(id) {
