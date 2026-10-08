@@ -1,6 +1,4 @@
-
- {
-            id: 9,// FUNÇÃO PARA PEGAR ELEMENTOS PELO ID
+// FUNÇÃO PARA PEGAR ELEMENTOS PELO ID
 function $(id) {
     return document.getElementById(id);
 }
@@ -11,7 +9,10 @@ if ($("dataAtual")) {
         "Data: " + new Date().toLocaleDateString("pt-BR");
 }
 
+// ===============================
 // MENUS
+// ===============================
+
 const btnSobre = $("btnSobre");
 const menuSobre = $("menuSobre");
 
@@ -20,7 +21,7 @@ const menuContato = $("menuContato");
 
 // MENU SOBRE
 if (btnSobre && menuSobre) {
-    btnSobre.addEventListener("click", function(evento) {
+    btnSobre.addEventListener("click", function (evento) {
         evento.stopPropagation();
 
         menuSobre.classList.toggle("ativo");
@@ -33,7 +34,7 @@ if (btnSobre && menuSobre) {
 
 // MENU CONTATO
 if (btnContato && menuContato) {
-    btnContato.addEventListener("click", function(evento) {
+    btnContato.addEventListener("click", function (evento) {
         evento.stopPropagation();
 
         menuContato.classList.toggle("ativo");
@@ -45,7 +46,7 @@ if (btnContato && menuContato) {
 }
 
 // FECHAR MENUS AO CLICAR FORA
-document.addEventListener("click", function() {
+document.addEventListener("click", function () {
     if (menuSobre) {
         menuSobre.classList.remove("ativo");
     }
@@ -55,20 +56,26 @@ document.addEventListener("click", function() {
     }
 });
 
+// ===============================
 // TELEFONE
+// ===============================
+
 if ($("telefone")) {
-    $("telefone").addEventListener("click", function(evento) {
+    $("telefone").addEventListener("click", function (evento) {
         evento.preventDefault();
 
         alert("Telefone: (32) 99999-9999");
     });
 }
 
+// ===============================
 // CADASTRO
+// ===============================
+
 const formCadastro = $("formCadastro");
 
 if (formCadastro) {
-    formCadastro.addEventListener("submit", function(evento) {
+    formCadastro.addEventListener("submit", function (evento) {
         evento.preventDefault();
 
         const nome = $("nomeCadastro").value.trim();
@@ -78,6 +85,19 @@ if (formCadastro) {
         const senha = $("senhaCadastro").value;
         const confirmarSenha = $("confirmarSenha").value;
         const mensagem = $("mensagemCadastro");
+
+        if (
+            !nome ||
+            !cpf ||
+            !endereco ||
+            !email ||
+            !senha ||
+            !confirmarSenha
+        ) {
+            mensagem.textContent = "Preencha todos os campos.";
+            mensagem.style.color = "red";
+            return;
+        }
 
         if (senha !== confirmarSenha) {
             mensagem.textContent = "As senhas não são iguais.";
@@ -114,17 +134,20 @@ if (formCadastro) {
 
         mensagem.style.color = "green";
 
-        setTimeout(function() {
+        setTimeout(function () {
             window.location.href = "site.html";
         }, 700);
     });
 }
 
+// ===============================
 // LOGIN
+// ===============================
+
 const formLogin = $("formLogin");
 
 if (formLogin) {
-    formLogin.addEventListener("submit", function(evento) {
+    formLogin.addEventListener("submit", function (evento) {
         evento.preventDefault();
 
         const email = $("emailLogin").value.trim().toLowerCase();
@@ -143,7 +166,17 @@ if (formLogin) {
             return;
         }
 
-        const usuario = JSON.parse(dados);
+        let usuario;
+
+        try {
+            usuario = JSON.parse(dados);
+        } catch (erro) {
+            mensagem.textContent =
+                "Erro nos dados do usuário.";
+
+            mensagem.style.color = "red";
+            return;
+        }
 
         if (usuario.senha !== senha) {
             mensagem.textContent =
@@ -163,20 +196,26 @@ if (formLogin) {
 
         mensagem.style.color = "green";
 
-        setTimeout(function() {
+        setTimeout(function () {
             window.location.href = "site.html";
         }, 700);
     });
 }
 
-// PROTEGER A PÁGINA DE PRODUTOS
+// ===============================
+// PROTEGER SITE.HTML
+// ===============================
+
 if (location.pathname.endsWith("site.html")) {
     if (!localStorage.getItem("usuarioLogado")) {
         window.location.href = "login.html";
     }
 }
 
-// MOSTRAR NOME DO USUÁRIO
+// ===============================
+// USUÁRIO LOGADO
+// ===============================
+
 let usuarioLogado = null;
 
 try {
@@ -191,21 +230,33 @@ if ($("nomeUsuario") && usuarioLogado) {
     $("nomeUsuario").textContent = usuarioLogado.nome;
 }
 
+// ===============================
 // SAIR
+// ===============================
+
 if ($("botaoSair")) {
-    $("botaoSair").addEventListener("click", function() {
+    $("botaoSair").addEventListener("click", function () {
         localStorage.removeItem("usuarioLogado");
         window.location.href = "index.html";
     });
 }
 
-// PRODUTOS DISPONÍVEIS
-function criarProdutosIniciais() {
-    let produtos = JSON.parse(
-        localStorage.getItem("produtosComprae") || "null"
-    );
+// ===============================
+// PRODUTOS INICIAIS
+// ===============================
 
-    if (produtos && produtos.length > 0) {
+function criarProdutosIniciais() {
+    let produtos;
+
+    try {
+        produtos = JSON.parse(
+            localStorage.getItem("produtosComprae") || "null"
+        );
+    } catch (erro) {
+        produtos = null;
+    }
+
+    if (Array.isArray(produtos) && produtos.length > 0) {
         return;
     }
 
@@ -290,6 +341,8 @@ function criarProdutosIniciais() {
             emailVendedor: "produtos@comprae.com",
             comprado: false
         },
+        {
+            id: 9,
             nome: "Celular Samsung",
             preco: 1500,
             categoria: "Celulares",
@@ -326,16 +379,25 @@ function criarProdutosIniciais() {
     );
 }
 
+// ===============================
 // PUBLICAR PRODUTO
+// ===============================
+
 const formProduto = $("formProduto");
 
 if (formProduto) {
-    formProduto.addEventListener("submit", function(evento) {
+    formProduto.addEventListener("submit", function (evento) {
         evento.preventDefault();
 
-        const usuario = JSON.parse(
-            localStorage.getItem("usuarioLogado")
-        );
+        let usuario;
+
+        try {
+            usuario = JSON.parse(
+                localStorage.getItem("usuarioLogado")
+            );
+        } catch (erro) {
+            usuario = null;
+        }
 
         const arquivo = $("imagemProduto").files[0];
         const mensagem = $("mensagemProduto");
@@ -351,23 +413,41 @@ if (formProduto) {
             return;
         }
 
+        const nome = $("nomeProduto").value.trim();
+        const preco = Number($("precoProduto").value);
+        const categoria = $("tipoProduto").value;
+
+        if (!nome || !preco || preco <= 0 || !categoria) {
+            mensagem.textContent =
+                "Preencha corretamente os dados do produto.";
+
+            mensagem.style.color = "red";
+            return;
+        }
+
         const leitor = new FileReader();
 
-        leitor.onload = function() {
+        leitor.onload = function () {
             const produto = {
                 id: Date.now(),
-                nome: $("nomeProduto").value.trim(),
-                preco: Number($("precoProduto").value),
-                categoria: $("tipoProduto").value,
+                nome: nome,
+                preco: preco,
+                categoria: categoria,
                 imagem: leitor.result,
                 vendedor: usuario.nome,
                 emailVendedor: usuario.email,
                 comprado: false
             };
 
-            let produtos = JSON.parse(
-                localStorage.getItem("produtosComprae") || "[]"
-            );
+            let produtos;
+
+            try {
+                produtos = JSON.parse(
+                    localStorage.getItem("produtosComprae") || "[]"
+                );
+            } catch (erro) {
+                produtos = [];
+            }
 
             produtos.push(produto);
 
@@ -390,7 +470,10 @@ if (formProduto) {
     });
 }
 
+// ===============================
 // MOSTRAR PRODUTOS
+// ===============================
+
 function mostrarProdutos() {
     const lista = $("listaProdutos");
 
@@ -400,34 +483,46 @@ function mostrarProdutos() {
 
     criarProdutosIniciais();
 
-    const usuario = JSON.parse(
-        localStorage.getItem("usuarioLogado")
-    );
+    let usuario;
+
+    try {
+        usuario = JSON.parse(
+            localStorage.getItem("usuarioLogado")
+        );
+    } catch (erro) {
+        usuario = null;
+    }
 
     if (!usuario) {
         return;
     }
 
-    const produtos = JSON.parse(
-        localStorage.getItem("produtosComprae") || "[]"
-    );
+    let produtos;
+
+    try {
+        produtos = JSON.parse(
+            localStorage.getItem("produtosComprae") || "[]"
+        );
+    } catch (erro) {
+        produtos = [];
+    }
 
     const campoBusca = $("buscaProdutos");
 
     const busca = campoBusca
-        ? campoBusca.value.toLowerCase()
+        ? campoBusca.value.toLowerCase().trim()
         : "";
 
     lista.innerHTML = "";
 
     produtos
-        .filter(function(produto) {
+        .filter(function (produto) {
             return (
                 produto.nome.toLowerCase().includes(busca) ||
                 produto.categoria.toLowerCase().includes(busca)
             );
         })
-        .forEach(function(produto) {
+        .forEach(function (produto) {
             const card = document.createElement("article");
 
             card.className = "produto-card";
@@ -437,8 +532,8 @@ function mostrarProdutos() {
             if (produto.comprado) {
                 botoes =
                     '<button class="botao produto-vendido" disabled>' +
-                    'Produto vendido' +
-                    '</button>';
+                    "Produto vendido" +
+                    "</button>";
             } else if (
                 produto.emailVendedor === usuario.email
             ) {
@@ -446,22 +541,22 @@ function mostrarProdutos() {
                     '<button class="botao-excluir" onclick="excluirProduto(' +
                     produto.id +
                     ')">' +
-                    'Excluir' +
-                    '</button>';
+                    "Excluir" +
+                    "</button>";
             } else {
                 botoes =
                     '<button class="botao" onclick="comprarProduto(' +
                     produto.id +
                     ')">' +
-                    'Comprar' +
-                    '</button>';
+                    "Comprar" +
+                    "</button>";
 
                 botoes +=
                     '<button class="botao botao-favorito" onclick="tenhoInteresse(' +
                     produto.id +
                     ')">' +
-                    '♡ Interesse' +
-                    '</button>';
+                    "♡ Interesse" +
+                    "</button>";
             }
 
             card.innerHTML =
@@ -475,56 +570,74 @@ function mostrarProdutos() {
 
                 '<span class="categoria">' +
                 produto.categoria +
-                '</span>' +
+                "</span>" +
 
-                '<h3>' +
+                "<h3>" +
                 produto.nome +
-                '</h3>' +
+                "</h3>" +
 
                 '<p class="preco">' +
-                'R$ ' +
-                produto.preco
+                "R$ " +
+                Number(produto.preco)
                     .toFixed(2)
                     .replace(".", ",") +
-                '</p>' +
+                "</p>" +
 
-                '<p>Vendedor: <strong>' +
+                "<p>Vendedor: <strong>" +
                 produto.vendedor +
-                '</strong></p>' +
+                "</strong></p>" +
 
                 '<div class="botoes-produto">' +
                 botoes +
-                '</div>' +
+                "</div>" +
 
-                '</div>';
+                "</div>";
 
             lista.appendChild(card);
         });
 }
 
+// ===============================
 // PESQUISA
+// ===============================
+
 if ($("buscaProdutos")) {
     $("buscaProdutos").addEventListener(
         "input",
-        function() {
+        function () {
             mostrarProdutos();
         }
     );
 }
 
+// ===============================
 // COMPRAR PRODUTO
-function comprarProduto(id) {
-    let produtos = JSON.parse(
-        localStorage.getItem("produtosComprae") || "[]"
-    );
+// ===============================
 
-    const produto = produtos.find(function(item) {
+function comprarProduto(id) {
+    let produtos;
+
+    try {
+        produtos = JSON.parse(
+            localStorage.getItem("produtosComprae") || "[]"
+        );
+    } catch (erro) {
+        produtos = [];
+    }
+
+    const produto = produtos.find(function (item) {
         return item.id === id;
     });
 
-    const usuario = JSON.parse(
-        localStorage.getItem("usuarioLogado")
-    );
+    let usuario;
+
+    try {
+        usuario = JSON.parse(
+            localStorage.getItem("usuarioLogado")
+        );
+    } catch (erro) {
+        usuario = null;
+    }
 
     if (!produto || !usuario) {
         return;
@@ -540,7 +653,6 @@ function comprarProduto(id) {
         return;
     }
 
-    // CRIAR JANELA DE PAGAMENTO
     const fundo = document.createElement("div");
 
     fundo.className = "janela-pagamento";
@@ -549,50 +661,53 @@ function comprarProduto(id) {
         '<div class="caixa-pagamento">' +
 
         '<button class="fechar-pagamento" onclick="fecharPagamento()">' +
-        '×' +
-        '</button>' +
+        "×" +
+        "</button>" +
 
-        '<h2>Finalizar compra</h2>' +
+        "<h2>Finalizar compra</h2>" +
 
         '<p class="texto-produto">Você está comprando:</p>' +
 
-        '<h3>' +
+        "<h3>" +
         produto.nome +
-        '</h3>' +
+        "</h3>" +
 
         '<p class="valor-pagamento">' +
-        'R$ ' +
-        produto.preco
+        "R$ " +
+        Number(produto.preco)
             .toFixed(2)
             .replace(".", ",") +
-        '</p>' +
+        "</p>" +
 
-        '<h3>Escolha a forma de pagamento:</h3>' +
+        "<h3>Escolha a forma de pagamento:</h3>" +
 
         '<button class="opcao-pagamento" onclick="finalizarPagamento(' +
         produto.id +
         ', \'PIX\')">' +
-        '<span>💠</span> PIX' +
-        '</button>' +
+        "<span>💠</span> PIX" +
+        "</button>" +
 
         '<button class="opcao-pagamento" onclick="finalizarPagamento(' +
         produto.id +
         ', \'Cartão de crédito\')">' +
-        '<span>💳</span> Cartão de crédito' +
-        '</button>' +
+        "<span>💳</span> Cartão de crédito" +
+        "</button>" +
 
         '<button class="opcao-pagamento" onclick="finalizarPagamento(' +
         produto.id +
         ', \'Boleto\')">' +
-        '<span>🧾</span> Boleto' +
-        '</button>' +
+        "<span>🧾</span> Boleto" +
+        "</button>" +
 
-        '</div>';
+        "</div>";
 
     document.body.appendChild(fundo);
 }
 
+// ===============================
 // FECHAR PAGAMENTO
+// ===============================
+
 function fecharPagamento() {
     const janela =
         document.querySelector(".janela-pagamento");
@@ -602,13 +717,22 @@ function fecharPagamento() {
     }
 }
 
+// ===============================
 // FINALIZAR PAGAMENTO
-function finalizarPagamento(id, formaPagamento) {
-    let produtos = JSON.parse(
-        localStorage.getItem("produtosComprae") || "[]"
-    );
+// ===============================
 
-    const produto = produtos.find(function(item) {
+function finalizarPagamento(id, formaPagamento) {
+    let produtos;
+
+    try {
+        produtos = JSON.parse(
+            localStorage.getItem("produtosComprae") || "[]"
+        );
+    } catch (erro) {
+        produtos = [];
+    }
+
+    const produto = produtos.find(function (item) {
         return item.id === id;
     });
 
@@ -616,11 +740,20 @@ function finalizarPagamento(id, formaPagamento) {
         return;
     }
 
+    if (produto.comprado) {
+        alert("Este produto já foi vendido.");
+        fecharPagamento();
+        mostrarProdutos();
+        return;
+    }
+
     const confirmar = confirm(
         "Produto: " +
         produto.nome +
         "\nValor: R$ " +
-        produto.preco.toFixed(2).replace(".", ",") +
+        Number(produto.preco)
+            .toFixed(2)
+            .replace(".", ",") +
         "\nPagamento: " +
         formaPagamento +
         "\n\nDeseja confirmar a compra?"
@@ -649,13 +782,22 @@ function finalizarPagamento(id, formaPagamento) {
     mostrarProdutos();
 }
 
+// ===============================
 // TENHO INTERESSE
-function tenhoInteresse(id) {
-    const produtos = JSON.parse(
-        localStorage.getItem("produtosComprae") || "[]"
-    );
+// ===============================
 
-    const produto = produtos.find(function(item) {
+function tenhoInteresse(id) {
+    let produtos;
+
+    try {
+        produtos = JSON.parse(
+            localStorage.getItem("produtosComprae") || "[]"
+        );
+    } catch (erro) {
+        produtos = [];
+    }
+
+    const produto = produtos.find(function (item) {
         return item.id === id;
     });
 
@@ -682,17 +824,32 @@ function tenhoInteresse(id) {
         texto;
 }
 
+// ===============================
 // EXCLUIR PRODUTO
+// ===============================
+
 function excluirProduto(id) {
-    let produtos = JSON.parse(
-        localStorage.getItem("produtosComprae") || "[]"
-    );
+    let produtos;
 
-    const usuario = JSON.parse(
-        localStorage.getItem("usuarioLogado")
-    );
+    try {
+        produtos = JSON.parse(
+            localStorage.getItem("produtosComprae") || "[]"
+        );
+    } catch (erro) {
+        produtos = [];
+    }
 
-    const produto = produtos.find(function(item) {
+    let usuario;
+
+    try {
+        usuario = JSON.parse(
+            localStorage.getItem("usuarioLogado")
+        );
+    } catch (erro) {
+        usuario = null;
+    }
+
+    const produto = produtos.find(function (item) {
         return item.id === id;
     });
 
@@ -708,7 +865,7 @@ function excluirProduto(id) {
         return;
     }
 
-    produtos = produtos.filter(function(item) {
+    produtos = produtos.filter(function (item) {
         return item.id !== id;
     });
 
@@ -720,9 +877,11 @@ function excluirProduto(id) {
     mostrarProdutos();
 }
 
+// ===============================
 // INICIAR
+// ===============================
+
 if ($("listaProdutos")) {
     criarProdutosIniciais();
     mostrarProdutos();
 }
-
