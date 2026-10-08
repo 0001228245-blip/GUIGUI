@@ -1,5 +1,5 @@
-
-        {
+Não é spam
+ {
             id: 9,// FUNÇÃO PARA PEGAR ELEMENTOS PELO ID
 function $(id) {
     return document.getElementById(id);
@@ -725,3 +725,4 @@ if ($("listaProdutos")) {
     criarProdutosIniciais();
     mostrarProdutos();
 }
+
